@@ -7,6 +7,10 @@ class ColorAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('color',)}
 
 
+admin.site.register(models.ProcessorIphone)
+admin.site.register(models.ScreenIphone)
+
+
 @admin.register(models.Iphone)
 class IphoneAdmin(admin.ModelAdmin):
     list_display = (
