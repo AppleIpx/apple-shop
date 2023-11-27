@@ -11,6 +11,13 @@ admin.site.register(models.ProcessorIphone)
 admin.site.register(models.ScreenIphone)
 
 
+@admin.register(models.IphoneRom)
+class IphoneRomAdmin(admin.ModelAdmin):
+    list_filter = (
+        'model',
+    )
+
+
 @admin.register(models.Iphone)
 class IphoneAdmin(admin.ModelAdmin):
     list_display = (
@@ -18,9 +25,31 @@ class IphoneAdmin(admin.ModelAdmin):
         'model',
         'image',
         'text',
-        # "rom",
-        # 'mobile_connection',
-        # 'price',
-        # 'processor',
-        # 'screen',
+    )
+
+
+@admin.register(models.Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'user',
+        'iphone'
+    )
+    list_editable = (
+        'user',
+        'iphone'
+    )
+    ordering = ("user",)
+
+
+@admin.register(models.ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'user',
+        'iphone'
+    )
+    list_editable = (
+        'user',
+        'iphone'
     )
