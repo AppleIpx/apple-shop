@@ -34,7 +34,7 @@ class FavoriteAdmin(admin.ModelAdmin):
         'pk',
         'user',
         'iphone',
-        # 'price_at_purchase',
+        'price_at_purchase',
     )
     list_editable = (
         'user',

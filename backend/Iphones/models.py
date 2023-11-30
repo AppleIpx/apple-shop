@@ -151,6 +151,11 @@ class Favorite(models.Model):
         related_name="favorite_user",
         on_delete=models.CASCADE,
     )
+    price_at_purchase = models.DecimalField(
+        verbose_name="Цена при покупке",
+        max_digits=15,
+        decimal_places=2,
+    )
     iphone = models.ForeignKey(
         Iphone,
         verbose_name="iPhone",
@@ -168,6 +173,11 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"{self.user} added {self.iphone}"
+
+    def save(self, *args, **kwargs):
+        # Присваиваем цену при покупке перед сохранением объекта
+        self.price_at_purchase = self.iphone.price
+        super().save(*args, **kwargs)
 
 
 class ShoppingCart(models.Model):
