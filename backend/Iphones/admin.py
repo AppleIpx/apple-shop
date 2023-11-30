@@ -33,7 +33,8 @@ class FavoriteAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
         'user',
-        'iphone'
+        'iphone',
+        'price_at_purchase',
     )
     list_editable = (
         'user',
@@ -47,9 +48,10 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
         'user',
-        'iphone'
+        'iphone',
+        'price_at_purchase'
     )
     list_editable = (
         'user',
-        'iphone'
+        'iphone',
     )
