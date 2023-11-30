@@ -1,4 +1,7 @@
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from users.models import User
 
 
 class ScreenIphone(models.Model):
@@ -10,22 +13,18 @@ class ScreenIphone(models.Model):
     diagonal = models.CharField(
         verbose_name="Диагональ",
         max_length=100,
-        unique=True,
     )
     type_of_screen = models.CharField(
         verbose_name="Тип",
         max_length=100,
-        unique=True,
     )
     resolution = models.CharField(
         verbose_name="Разрешение",
         max_length=50,
-        unique=True,
     )
     brightness = models.CharField(
         verbose_name="Яркость",
         max_length=50,
-        unique=True,
     )
 
     CONTRAST_CHOICES = [
@@ -35,13 +34,12 @@ class ScreenIphone(models.Model):
     pixel_procity = models.CharField(
         verbose_name="пикс/дюйм",
         max_length=50,
-        unique=True,
     )
 
     contrast = models.CharField(verbose_name="Контрастность", max_length=50, choices=CONTRAST_CHOICES)
 
     def __str__(self):
-        return self.model
+        return f"{self.model} iPhone"
 
 
 class ProcessorIphone(models.Model):
@@ -71,6 +69,22 @@ class Color(models.Model):
         return self.color
 
 
+class IphoneRom(models.Model):
+    ROM_CHOICES = [
+        ("64", "64GB"),
+        ("128", "128GB"),
+        ("256", "256GB"),
+        ("512", "512GB"),
+        ("1024", "1024GB")
+    ]
+    model = models.CharField(verbose_name="Модель айфона", max_length=50,)
+    rom = models.CharField(max_length=10, verbose_name="Объем памяти", choices=ROM_CHOICES)
+    price = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Цена")
+
+    def __str__(self):
+        return f"iPhone {self.model} {self.rom}GB"
+
+
 class Iphone(models.Model):
     model = models.CharField(
         verbose_name="Модель iPhone",
@@ -81,22 +95,14 @@ class Iphone(models.Model):
     color = models.ForeignKey(
         Color,
         verbose_name="Цвет",
-        related_name="iPhones",
+        # related_name="iPhones",
         on_delete=models.CASCADE
     )
-    SIZE_CHOICES = [
-        ("64", "64GB"),
-        ("128", "128GB"),
-        ("256", "256GB"),
-        ("512", "512GB"),
-        ("1024", "1024GB")
-    ]
-
-    rom = models.CharField(
-        verbose_name="Объем памяти",
-        choices=SIZE_CHOICES,
-        unique=True,
-        max_length=10
+    rom = models.ForeignKey(
+        IphoneRom,
+        verbose_name="Память",
+        related_name="iPhones",
+        on_delete=models.CASCADE,
     )
     CONNECTION_CHOICES = [
         ("SIM_ESIM", "SIM/ESIM"),
@@ -130,4 +136,74 @@ class Iphone(models.Model):
         verbose_name_plural = 'iPhones'
 
     def __str__(self):
-        return self.model
+        return f"{self.model} iPhone"
+
+
+@receiver(pre_save, sender=Iphone)
+def update_price_from_rom(sender, instance, **kwargs):
+    instance.price = instance.rom.price
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        User,
+        verbose_name="Добавил в избранное",
+        related_name="favorite_user",
+        on_delete=models.CASCADE,
+    )
+    iphone = models.ForeignKey(
+        Iphone,
+        verbose_name="iPhone",
+        related_name="favorite",
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        verbose_name = "Избранный iPhone"
+        verbose_name_plural = "Избранные iPhones"
+        unique_together = (
+            "user",
+            "iphone"
+        )
+
+    def __str__(self):
+        return f"{self.user} added {self.iphone}"
+
+
+class ShoppingCart(models.Model):
+    iphone = models.ForeignKey(
+        Iphone,
+        verbose_name="iPhone в корзине",
+        related_name="shopping_cart",
+        on_delete=models.CASCADE,
+    )
+    price_at_purchase = models.DecimalField(
+        verbose_name="Цена при покупке",
+        max_digits=15,
+        decimal_places=2,
+    )
+    user = models.ForeignKey(
+        User,
+        verbose_name="Пользователь",
+        related_name="shopping_cart",
+        on_delete=models.CASCADE
+    )
+
+    class Meta:
+        verbose_name = "Список покупки"
+        verbose_name_plural = "Список покупок"
+
+        # Делаем эти значения в бд уникальными
+        unique_together = (
+            "user",
+            "iphone"
+        )
+
+    def __str__(self):
+        return f"{self.user} added {self.iphone}"
+
+    def save(self, *args, **kwargs):
+        # Присваиваем цену при покупке перед сохранением объекта
+        self.price_at_purchase = self.iphone.price
+        super().save(*args, **kwargs)
+
