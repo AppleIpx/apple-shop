@@ -8,6 +8,7 @@ class User(AbstractUser):
         'id',
         'password',
         'first_name',
+        'last_name',
         'username',
     )
     email = models.EmailField(
@@ -19,8 +20,13 @@ class User(AbstractUser):
         max_length=30,
         blank=False
     )
-    username = models.CharField(
+    last_name = models.CharField(
         verbose_name="Фамилия",
+        max_length=30,
+        blank=False
+    )
+    username = models.CharField(
+        verbose_name="Имя пользователя",
         max_length=30,
         blank=False
     )
