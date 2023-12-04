@@ -2,19 +2,23 @@ from django.contrib import admin
 from . import models
 
 
-@admin.register(models.Color)
-class ColorAdmin(admin.ModelAdmin):
+@admin.register(models.IphoneColor)
+class IphoneColorAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('color',)}
 
 
-admin.site.register(models.ProcessorIphone)
-admin.site.register(models.ScreenIphone)
+admin.site.register(models.IphoneProcessor)
+admin.site.register(models.IphoneDiagonal)
+admin.site.register(models.IphoneMobileConnection)
+admin.site.register(models.IphoneCountCamera)
+admin.site.register(models.IphoneTypeOfScreen)
+admin.site.register(models.IphoneModel)
 
 
 @admin.register(models.IphoneRom)
 class IphoneRomAdmin(admin.ModelAdmin):
     list_filter = (
-        'model',
+        'rom',
     )
 
 
