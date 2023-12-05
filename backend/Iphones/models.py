@@ -128,10 +128,6 @@ class IphoneModel(models.Model):
 
 
 class Iphone(models.Model):
-    # model = models.CharField(
-    #     verbose_name="Модель iPhone",
-    #     max_length=256,
-    # )
     model = models.ForeignKey(
         IphoneModel,
         verbose_name="Модель iPhone",
@@ -220,7 +216,7 @@ class Iphone(models.Model):
         verbose_name_plural = 'iPhones'
 
     def __str__(self):
-        return f"{self.model} iPhone"
+        return f"{self.model} {self.rom}"
 
 
 class Favorite(models.Model):

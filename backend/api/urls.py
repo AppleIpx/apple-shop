@@ -12,8 +12,8 @@ router.register(r'users', views.UserView, basename="users")
 
 urlpatterns = [
     # path("", views.main),
-    # path("iphones/<int:iphone_id>/favorite/", views.FavoriteView.as_view()),
-    # path("iphones/<int:iphone_id>/shopping_cart/", views.ShoppingCartView.as_view()),
+    path("iphones/<int:iphone_id>/favorite/", views.FavoriteView.as_view()),
+    path("iphones/<int:iphone_id>/shopping_cart/", views.ShoppingCartView.as_view()),
     path(r'auth/', include('djoser.urls.authtoken')),
     path("", include(router.urls)),
 ]

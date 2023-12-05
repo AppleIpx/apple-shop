@@ -7,6 +7,7 @@ from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
 )
+from rest_framework.views import APIView
 from rest_framework import serializers
 from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
@@ -27,6 +28,7 @@ from .serializers import (
     CreateUserSerializer,
     UserReadSerializer,
     PasswordSerializer,
+    SpecIphoneSerializers
 )
 from .serializers import ShowIphoneSerializers
 
@@ -111,22 +113,19 @@ class IphoneView(viewsets.ModelViewSet):
     filterset_class = IphoneFilter
     http_method_names = ['get', 'post', 'patch', 'create', 'delete']
 
-    # метод, который выводит iphones по первым буквам
-    def get_queryset(self):
-        name = str(self.request.query_params.get("name"))
-        queryset = self.queryset
-        if not name:
-            return queryset
-        start_queryset = queryset.filter(name__istartswith=name)
-        return start_queryset
-
-    # def get_serializer_class(self):
-    #     method = self.request.method
-    #     if method == "GET":
-    #         return ShowIphoneSerializers
+    @action(detail=True, methods=['get'])
+    def spec(self, request, pk=None):
+        iphone = self.get_object()
+        serializer = SpecIphoneSerializers(iphone)
+        return Response(serializer.data)
 
 
-class FavoriteView(viewsets.ModelViewSet):
+class IphoneSpecView(viewsets.ModelViewSet):
+    serializer_class = SpecIphoneSerializers
+    permission_classes = (AllowAny, )
+
+
+class FavoriteView(APIView):
     permission_classes = (IsAuthenticated,)
 
     @action(methods=["post", ], detail=True, )
@@ -163,7 +162,7 @@ class FavoriteView(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ShoppingCartView(viewsets.ModelViewSet):
+class ShoppingCartView(APIView):
     permission_classes = (IsAuthenticated,)
     pagination_class = None
 

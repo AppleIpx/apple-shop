@@ -140,20 +140,7 @@ class ShowIphoneSerializers(serializers.ModelSerializer):
 class SpecIphoneSerializers(ShowIphoneSerializers):
     class Meta:
         model = Iphone
-        fields = (
-            "id",
-            "is_favorited",
-            "is_in_shopping_cart",
-            "model",
-            "image",
-            "text",
-            "rom",
-            "color",
-            "mobile_connection",
-            "price",
-            "processor"
-            "screen"
-        )
+        fields = "__all__"
 
 
 class FavoriteSerializers(serializers.ModelSerializer):
