@@ -30,3 +30,10 @@ class User(AbstractUser):
         max_length=30,
         blank=False
     )
+
+    def save(self, *args, **kwargs):
+        # ваша логика сохранения, если нужна
+        if "password" in self.__dict__ and self.password:
+            # если есть пароль, хэшируем его перед сохранением
+            self.set_password(self.password)
+        super().save(*args, **kwargs)
